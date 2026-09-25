@@ -4,6 +4,7 @@
         --cream: #fffaf3;
         --sand: #f4e7d7;
         --gold: #d99118;
+        --gold-dark: #b97109;
         --berry: #a63032;
         --white: #fff;
         --shadow: 0 14px 34px rgba(60, 40, 20, 0.12);
@@ -541,6 +542,115 @@
       .finder-result strong { display: block; font-size: 1.05rem; margin: 4px 0; }
       .finder-result p { color: var(--muted); font-size: 0.88rem; margin-bottom: 13px; }
       .finder-result .button { font-size: 0.82rem; padding: 10px 16px; }
+      .checkout-form {
+        background: var(--white);
+        border: 1px solid rgba(45, 35, 28, 0.09);
+        border-radius: 18px;
+        box-shadow: 0 12px 34px rgba(60, 40, 20, 0.08);
+        color: var(--ink);
+        margin: 28px auto 0;
+        max-width: 760px;
+        padding: clamp(20px, 4vw, 38px);
+        text-align: left;
+      }
+      .checkout-group {
+        border: 0;
+        border-bottom: 1px solid var(--sand);
+        margin: 0 0 25px;
+        min-width: 0;
+        padding: 0 0 25px;
+      }
+      .checkout-group legend {
+        float: left;
+        font-size: 1.12rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        width: 100%;
+      }
+      .customer-fields {
+        clear: both;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .form-field { min-width: 0; }
+      .form-field.full-width { grid-column: 1 / -1; }
+      .form-field label {
+        display: block;
+        font-size: 0.86rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .form-field label span { color: var(--berry); }
+      .form-field input,
+      .form-field textarea,
+      .order-line select,
+      .order-line input {
+        background: #fffdfa;
+        border: 1px solid #ded1c4;
+        border-radius: 9px;
+        color: var(--ink);
+        font: inherit;
+        min-height: 46px;
+        padding: 10px 12px;
+        width: 100%;
+      }
+      .form-field textarea { min-height: 88px; resize: vertical; }
+      .form-field input:focus,
+      .form-field textarea:focus,
+      .order-line select:focus,
+      .order-line input:focus { border-color: var(--gold-dark); outline: 3px solid rgba(217, 145, 24, 0.18); }
+      .form-hint { clear: both; color: var(--muted); font-size: 0.86rem; margin: 0 0 14px; }
+      .order-line {
+        align-items: end;
+        background: var(--cream);
+        border: 1px solid var(--sand);
+        border-radius: 12px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: minmax(0, 1fr) 120px auto;
+        margin-bottom: 11px;
+        padding: 14px;
+      }
+      .order-line label { display: block; font-size: 0.76rem; font-weight: 700; margin-bottom: 5px; }
+      .line-price { font-size: 0.86rem; font-weight: 800; min-width: 70px; padding-bottom: 12px; text-align: right; }
+      .remove-line {
+        background: transparent;
+        border: 0;
+        color: var(--berry);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
+      .remove-line:hover { text-decoration: underline; }
+      .add-flavour-button {
+        background: transparent;
+        border: 1px dashed var(--gold-dark);
+        border-radius: 9px;
+        color: var(--berry);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.88rem;
+        font-weight: 800;
+        padding: 11px 14px;
+        width: 100%;
+      }
+      .add-flavour-button:hover { background: #fff8eb; }
+      .add-flavour-button:disabled { cursor: not-allowed; opacity: 0.5; }
+      .order-total {
+        align-items: baseline;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        margin: 0 0 20px;
+      }
+      .order-total > span { font-weight: 700; }
+      .order-total strong { color: var(--berry); font-size: 1.45rem; }
+      .order-total small { color: var(--muted); grid-column: 1 / -1; margin-top: 3px; }
+      .checkout-submit { cursor: pointer; text-align: center; width: 100%; }
+      .privacy-note { color: var(--muted); font-size: 0.77rem; margin: 12px 0 0 !important; text-align: center; }
       .order {
         background: var(--sand);
         padding: 66px 8%;
@@ -645,4 +755,9 @@
         .modal-copy { padding: 30px; }
         .modal { padding: 12px; }
         .modal-card { margin: 0 auto 18px; }
+        .customer-fields { grid-template-columns: 1fr; }
+        .form-field.full-width { grid-column: auto; }
+        .order-line { grid-template-columns: minmax(0, 1fr) 90px; }
+        .line-price { grid-column: 1 / 2; padding: 0; text-align: left; }
+        .remove-line { grid-column: 2 / 3; grid-row: 2; }
       }
