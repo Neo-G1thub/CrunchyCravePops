@@ -172,42 +172,54 @@
           </div>
         </div>
       </section>
-      <section class="order-builder" aria-labelledby="builder-heading">
-        <div class="builder-box">
-          <div>
-            <p class="eyebrow">Create your order</p>
-            <h2 id="builder-heading">Choose your flavour, then message us.</h2>
-            <p>Tell us what you would like, and we will receive your order details directly on WhatsApp.</p>
-          </div>
-          <form class="builder-form" id="order-builder-form">
-            <label for="flavour-choice">Choose a flavour</label>
-            <select id="flavour-choice" name="flavour" required>
-              <option value="Choco Pista Popcorn">Choco Pista Popcorn</option>
-              <option value="Red Velvet Popcorn">Red Velvet Popcorn</option>
-              <option value="Schezwan Popcorn">Schezwan Popcorn</option>
-              <option value="Achari Popcorn">Achari Popcorn</option>
-            </select>
-            <label for="quantity-choice">Number of 100g packs</label>
-            <input id="quantity-choice" name="quantity" type="number" min="1" max="100" value="1" required>
-            <button class="button whatsapp" type="submit">Create my WhatsApp order</button>
-          </form>
-        </div>
-      </section>
       <section class="order" id="order">
         <div class="order-box">
           <p class="eyebrow">Ready to snack?</p>
-          <h2>Place your order in a few taps.</h2>
+          <h2>Build your popcorn order.</h2>
           <p>
-            Message us on WhatsApp to ask about availability, bulk orders, or
-            your favourite flavour.
+            Add your delivery details and choose one or more flavours. We will
+            confirm availability and delivery on WhatsApp.
           </p>
-          <a
-            class="button whatsapp"
-            href="https://wa.me/919971592451?text=Hi%20Crunchy%20Crave%20Pops%21%20I%20would%20like%20to%20place%20an%20order.%20Please%20share%20the%20available%20flavours%20and%20delivery%20details."
-            target="_blank"
-            rel="noopener"
-            >Order on WhatsApp: +91 99715 92451</a
-          >
+          <form class="checkout-form" id="checkout-form">
+            <fieldset class="checkout-group">
+              <legend>Your details</legend>
+              <div class="customer-fields">
+                <div class="form-field">
+                  <label for="customer-name">Full name <span aria-hidden="true">*</span></label>
+                  <input id="customer-name" name="name" type="text" autocomplete="name" maxlength="80" required>
+                </div>
+                <div class="form-field">
+                  <label for="customer-phone">Phone number <span aria-hidden="true">*</span></label>
+                  <input id="customer-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" pattern="[+]?[0-9() -]{10,18}" maxlength="18" placeholder="e.g. 99715 92451" required>
+                </div>
+                <div class="form-field full-width">
+                  <label for="customer-address">Full delivery address <span aria-hidden="true">*</span></label>
+                  <textarea id="customer-address" name="address" autocomplete="street-address" rows="3" maxlength="250" placeholder="House / flat, street, area" required></textarea>
+                </div>
+                <div class="form-field">
+                  <label for="customer-city">City <span aria-hidden="true">*</span></label>
+                  <input id="customer-city" name="city" type="text" autocomplete="address-level2" maxlength="60" required>
+                </div>
+                <div class="form-field">
+                  <label for="customer-pincode">PIN code <span aria-hidden="true">*</span></label>
+                  <input id="customer-pincode" name="pincode" type="text" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{6}" maxlength="6" placeholder="6 digits" required>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="checkout-group">
+              <legend>Choose your popcorn</legend>
+              <p class="form-hint">Each pack is 100g. Add another flavour if you would like a mixed order.</p>
+              <div class="order-lines" id="order-lines"></div>
+              <button class="add-flavour-button" id="add-flavour" type="button">＋ Add another flavour</button>
+            </fieldset>
+            <div class="order-total" aria-live="polite">
+              <span>Popcorn subtotal</span>
+              <strong id="order-total">₹99</strong>
+              <small>Delivery, if applicable, will be confirmed on WhatsApp.</small>
+            </div>
+            <button class="button whatsapp checkout-submit" type="submit">Continue to WhatsApp</button>
+            <p class="privacy-note">Your details will be included in the WhatsApp message so we can confirm your order.</p>
+          </form>
           <br />
           <a class="instagram-link" href="https://www.instagram.com/crunchycravepops/" target="_blank" rel="noopener">See more on Instagram: @crunchycravepops</a>
         </div>
@@ -311,17 +323,118 @@
         if (event.key === "Escape") closeModal();
       });
 
-      const quantityChoice = document.getElementById("quantity-choice");
-      quantityChoice.addEventListener("input", () => {
-        if (Number(quantityChoice.value) > 100) quantityChoice.value = 100;
+      const packPrice = 99;
+      const maxPacks = 100;
+      const products = [
+        "Choco Pista Popcorn",
+        "Red Velvet Popcorn",
+        "Schezwan Popcorn",
+        "Achari Popcorn"
+      ];
+      const orderLines = document.getElementById("order-lines");
+      const orderTotal = document.getElementById("order-total");
+      const addFlavourButton = document.getElementById("add-flavour");
+
+      function addOrderLine(defaultFlavour = "") {
+        const row = document.createElement("div");
+        row.className = "order-line";
+        row.innerHTML = `
+          <div>
+            <label>Popcorn flavour</label>
+            <select name="flavour" aria-label="Popcorn flavour" required>
+              <option value="" disabled ${defaultFlavour ? "" : "selected"}>Choose a flavour</option>
+              ${products.map((product) => `<option value="${product}" ${product === defaultFlavour ? "selected" : ""}>${product}</option>`).join("")}
+            </select>
+          </div>
+          <div>
+            <label>100g packs</label>
+            <input name="quantity" aria-label="Number of 100g packs" type="number" min="1" max="${maxPacks}" value="1" required>
+          </div>
+          <div class="line-price">₹${packPrice}</div>
+          ${orderLines.children.length ? '<button class="remove-line" type="button">Remove flavour</button>' : ""}
+        `;
+        orderLines.appendChild(row);
+        updateOrderTotal();
+      }
+
+      function updateOrderTotal(changedQuantity = null) {
+        const rows = Array.from(orderLines.querySelectorAll(".order-line"));
+        if (changedQuantity) {
+          const changedRow = changedQuantity.closest(".order-line");
+          const otherPacks = rows
+            .filter((row) => row !== changedRow)
+            .reduce((sum, row) => sum + (Number(row.querySelector('[name="quantity"]').value) || 0), 0);
+          const remaining = Math.max(1, maxPacks - otherPacks);
+          changedQuantity.value = Math.min(Math.max(Number(changedQuantity.value) || 1, 1), remaining);
+        }
+        const packCount = rows.reduce((sum, row) => sum + (Number(row.querySelector('[name="quantity"]').value) || 0), 0);
+        const total = packCount * packPrice;
+        orderTotal.textContent = `₹${total.toLocaleString("en-IN")}`;
+        addFlavourButton.disabled = rows.length >= products.length || packCount >= maxPacks;
+      }
+
+      addOrderLine(products[0]);
+      addFlavourButton.addEventListener("click", () => {
+        if (orderLines.children.length < products.length) addOrderLine();
+      });
+      orderLines.addEventListener("input", (event) => {
+        if (event.target.matches('[name="quantity"]')) updateOrderTotal(event.target);
+      });
+      orderLines.addEventListener("change", (event) => {
+        if (event.target.matches('[name="flavour"]')) {
+          const selectedFlavours = Array.from(orderLines.querySelectorAll('[name="flavour"]'))
+            .map((select) => select.value).filter(Boolean);
+          const duplicateFlavours = selectedFlavours.filter((flavour, index) => selectedFlavours.indexOf(flavour) !== index);
+          orderLines.querySelectorAll('[name="flavour"]').forEach((select) => {
+            select.setCustomValidity(duplicateFlavours.includes(select.value) ? "Please choose a different flavour for each line." : "");
+          });
+        }
+        updateOrderTotal();
+      });
+      orderLines.addEventListener("click", (event) => {
+        if (event.target.matches(".remove-line")) {
+          event.target.closest(".order-line").remove();
+          orderLines.querySelectorAll('[name="flavour"]').forEach((select) => select.setCustomValidity(""));
+          updateOrderTotal();
+        }
       });
 
-      document.getElementById("order-builder-form").addEventListener("submit", (event) => {
+      document.getElementById("checkout-form").addEventListener("submit", (event) => {
         event.preventDefault();
-        const flavour = document.getElementById("flavour-choice").value;
-        const quantity = Math.min(Math.max(Number(quantityChoice.value) || 1, 1), 100);
-        const message = `Hi Crunchy Crave Pops! I would like to order ${quantity} pack(s) of ${flavour} (100g each). Please share availability and delivery details.`;
-        window.open(createWhatsAppLink(message), "_blank");
+        const form = event.currentTarget;
+        if (!form.reportValidity()) return;
+        const rows = Array.from(orderLines.querySelectorAll(".order-line"));
+        const packCount = rows.reduce((sum, row) => sum + Number(row.querySelector('[name="quantity"]').value), 0);
+        if (packCount > maxPacks) {
+          updateOrderTotal();
+          return;
+        }
+        const customerName = document.getElementById("customer-name").value.trim();
+        const phone = document.getElementById("customer-phone").value.trim();
+        const address = document.getElementById("customer-address").value.trim();
+        const city = document.getElementById("customer-city").value.trim();
+        const pincode = document.getElementById("customer-pincode").value.trim();
+        const items = rows.map((row) => {
+          const flavour = row.querySelector('[name="flavour"]').value;
+          const quantity = Number(row.querySelector('[name="quantity"]').value);
+          return `• ${flavour} — ${quantity} × 100g pack(s): ₹${(quantity * packPrice).toLocaleString("en-IN")}`;
+        });
+        const subtotal = packCount * packPrice;
+        const message = [
+          "Hi Crunchy Crave Pops! I would like to place an order:",
+          "",
+          `Name: ${customerName}`,
+          `Phone: ${phone}`,
+          `Delivery address: ${address}, ${city} - ${pincode}`,
+          "",
+          "Order:",
+          ...items,
+          "",
+          `Popcorn subtotal: ₹${subtotal.toLocaleString("en-IN")}`,
+          "Delivery charge: Please confirm",
+          `Total before delivery: ₹${subtotal.toLocaleString("en-IN")}`
+        ].join("\n");
+        window.open(createWhatsAppLink(message), "_blank", "noopener");
       });
 
       function openFinder() {
